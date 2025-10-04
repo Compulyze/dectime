@@ -255,7 +255,7 @@
 
         function getSolarSeconds() {
             const now = new Date();
-            const utcTotalSeconds = Math.floor(now.getTime() / 1000);
+            const utcTotalSeconds = now.getTime() / 1000; // Fractional seconds
             const offsetSeconds = timeZones[currentZone] * 3600;
             let localTotalSeconds = (utcTotalSeconds + offsetSeconds) % 86400;
             if (localTotalSeconds < 0) localTotalSeconds += 86400;
@@ -271,9 +271,9 @@
             let decimalMinutes = Math.floor(remaining / decimalMinuteSeconds20);
             remaining = remaining % decimalMinuteSeconds20;
 
-            let decimalSeconds = (remaining / decimalSecondSolar20).toFixed(2);
+            let decimalSeconds = Math.floor(remaining / decimalSecondSolar20);
 
-            const formattedTime = `${decimalHours.toString().padStart(2, '0')}:${decimalMinutes.toString().padStart(2, '0')}:${decimalSeconds.padStart(5, '0')}`;
+            const formattedTime = `${decimalHours.toString().padStart(2, '0')}:${decimalMinutes.toString().padStart(2, '0')}:${decimalSeconds.toString().padStart(2, '0')}`;
             document.getElementById('clock20').textContent = formattedTime;
         }
 
@@ -286,10 +286,17 @@
             let decimalMinutes = Math.floor(remaining / decimalMinuteSeconds10);
             remaining = remaining % decimalMinuteSeconds10;
 
-            let decimalSeconds = (remaining / decimalSecondSolar10).toFixed(2);
+            let decimalSeconds = Math.floor(remaining / decimalSecondSolar10);
 
-            const formattedTime = `${decimalHours.toString().padStart(2, '0')}:${decimalMinutes.toString().padStart(2, '0')}:${decimalSeconds.padStart(5, '0')}`;
+            const formattedTime = `${decimalHours.toString().padStart(2, '0')}:${decimalMinutes.toString().padStart(2, '0')}:${decimalSeconds.toString().padStart(2, '0')}`;
             document.getElementById('clock10').textContent = formattedTime;
+        }
+
+        // Smooth animation loop using requestAnimationFrame
+        function animate() {
+            updateClock20();
+            updateClock10();
+            requestAnimationFrame(animate);
         }
 
         // Sync button events across all buttons
@@ -303,9 +310,6 @@
                 
                 // Add active to all buttons with matching data-zone
                 document.querySelectorAll(`[data-zone="${zone}"]`).forEach(b => b.classList.add('active'));
-                
-                updateClock20();
-                updateClock10();
             });
         });
 
@@ -330,13 +334,8 @@
             });
         });
 
-        // Update every second
-        setInterval(() => {
-            updateClock20();
-            updateClock10();
-        }, 1000);
-        updateClock20(); // Initial calls
-        updateClock10();
+        // Start the animation loop
+        animate();
     </script>
 </body>
 </html>
