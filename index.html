@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decimal Time Clock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 50px;
+        }
+        #clock {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #333;
+        }
+        .time-zone-btn {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+        .time-zone-btn:hover {
+            background-color: #0056b3;
+        }
+        .time-zone-btn.active {
+            background-color: #28a745;
+        }
+        #description {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Base-10 Decimal Time Clock (20 Hours/Day)</h1>
+    <div id="clock">Loading...</div>
+    <div>
+        <button class="time-zone-btn active" data-zone="Pacific">Pacific (PDT)</button>
+        <button class="time-zone-btn" data-zone="Mountain">Mountain (MDT)</button>
+        <button class="time-zone-btn" data-zone="Central">Central (CDT)</button>
+        <button class="time-zone-btn" data-zone="Eastern">Eastern (EDT)</button>
+    </div>
+    <div id="description">
+        This clock shows time in a custom base-10 system: 20 decimal hours/day, each with 100 decimal minutes and 100 decimal seconds.<br>
+        Each decimal second = 0.432 solar seconds. Date: October 03, 2025.
+    </div>
+
+    <script>
+        const timeZones = {
+            Pacific: -7,  // PDT UTC offset in hours
+            Mountain: -6, // MDT
+            Central: -5,  // CDT
+            Eastern: -4   // EDT
+        };
+
+        let currentZone = 'Central'; // Default to Central
+
+        function updateClock() {
+            const now = new Date();
+            const utcHours = now.getUTCHours();
+            const utcMinutes = now.getUTCMinutes();
+            const utcSeconds = now.getUTCSeconds();
+            const utcMillis = now.getUTCMilliseconds();
+
+            // Calculate local hours offset
+            const offsetHours = timeZones[currentZone];
+            let localHours = utcHours + offsetHours;
+            if (localHours < 0) localHours += 24;
+            if (localHours >= 24) localHours -= 24;
+
+            // Total solar seconds since midnight local
+            const solarSeconds = (localHours * 3600) + (utcMinutes * 60) + utcSeconds + (utcMillis / 1000);
+
+            // Decimal system: 20 hours/day = 4320 solar seconds per decimal hour
+            const decimalHourSeconds = 86400 / 20; // 4320
+            const decimalMinuteSeconds = decimalHourSeconds / 100; // 43.2
+            const decimalSecondSolar = decimalMinuteSeconds / 100; // 0.432
+
+            let decimalHours = Math.floor(solarSeconds / decimalHourSeconds);
+            let remaining = solarSeconds % decimalHourSeconds;
+
+            let decimalMinutes = Math.floor(remaining / decimalMinuteSeconds);
+            remaining = remaining % decimalMinuteSeconds;
+
+            let decimalSeconds = Math.floor((remaining / decimalSecondSolar) * 100) / 100; // Round to 2 decimals
+
+            // Format with leading zeros
+            const formattedTime = `${decimalHours.toString().padStart(2, '0')}:${decimalMinutes.toString().padStart(2, '0')}:${decimalSeconds.toFixed(2).padStart(5, '0')}`;
+
+            document.getElementById('clock').textContent = formattedTime;
+        }
+
+        // Event listeners for buttons
+        document.querySelectorAll('.time-zone-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.time-zone-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentZone = btn.dataset.zone;
+                updateClock();
+            });
+        });
+
+        // Update every second
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
+    </script>
+</body>
+</html>
