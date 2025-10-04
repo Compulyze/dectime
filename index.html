@@ -100,6 +100,15 @@
             transition: color 0.3s ease;
         }
 
+        .conversion-note {
+            text-align: center;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 10px 0;
+            font-size: 1.1em;
+            text-shadow: 0 0 5px var(--accent-color);
+        }
+
         .buttons {
             display: flex;
             justify-content: center;
@@ -206,6 +215,7 @@
     <div class="clock-section">
         <h2>20 Hours/Day System</h2>
         <div id="clock20">Loading...</div>
+        <div class="conversion-note">1 decimal hour = 1 solar hour and 12 solar minutes.</div>
         <div class="buttons">
             <button class="time-zone-btn" data-zone="Pacific" aria-label="Pacific Time">Pacific (PDT)</button>
             <button class="time-zone-btn" data-zone="Mountain" aria-label="Mountain Time">Mountain (MDT)</button>
@@ -221,6 +231,7 @@
     <div class="clock-section">
         <h2>10 Hours/Day System</h2>
         <div id="clock10">Loading...</div>
+        <div class="conversion-note">1 decimal hour = 2 solar hours and 24 solar minutes.</div>
         <div class="buttons">
             <button class="time-zone-btn" data-zone="Pacific" aria-label="Pacific Time">Pacific (PDT)</button>
             <button class="time-zone-btn" data-zone="Mountain" aria-label="Mountain Time">Mountain (MDT)</button>
